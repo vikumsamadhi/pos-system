@@ -14,7 +14,7 @@ function createWindow(): void {
     height: 860,
     minWidth: 1024,
     minHeight: 700,
-    show: false,
+    show: true,
     backgroundColor: '#0a0f14',
     title: 'POS Counter',
     autoHideMenuBar: true,
@@ -22,21 +22,25 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true,
+      sandbox: false,
     },
   })
-
-  mainWindow.once('ready-to-show', () => mainWindow?.show())
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     void shell.openExternal(url)
     return { action: 'deny' }
   })
 
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    console.error(`[pos] Failed to load: ${errorCode} ${errorDescription}`)
+  })
+
   if (process.env.VITE_DEV_SERVER_URL) {
     void mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL)
   } else {
-    void mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+    const htmlPath = path.join(__dirname, '../dist/index.html')
+    console.log(`[pos] Loading UI from ${htmlPath}`)
+    void mainWindow.loadFile(htmlPath)
   }
 
   mainWindow.on('closed', () => {

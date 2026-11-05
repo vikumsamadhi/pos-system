@@ -111,7 +111,7 @@ export function seedIfEmpty(db: Db): void {
 }
 
 export function updateSeedSinhalaNames(db: Db): void {
-  const updateStmt = db.prepare('UPDATE products SET name_si = ? WHERE sku = ? AND (name_si IS NULL OR name_si = "")')
+  const updateStmt = db.prepare("UPDATE products SET name_si = ? WHERE sku = ? AND (name_si IS NULL OR name_si = '')")
   const tx = db.transaction(() => {
     for (const p of PRODUCTS) {
       updateStmt.run(p.nameSi, p.sku)
